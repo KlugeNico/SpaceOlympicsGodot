@@ -64,9 +64,9 @@ if $build_x11; then
 fi
 
 if $build_android; then
-	cp custom_module_config.py custom.py
 	ANDROID_SDK_ROOT=/data/android/sdk
 	export ANDROID_SDK_ROOT
+	cp custom_module_config.py custom.py
 	scons platform=android target=release_debug android_arch=armv7
 	scons platform=android target=release_debug android_arch=arm64v8
 	scons platform=android target=release android_arch=armv7
@@ -75,7 +75,6 @@ if $build_android; then
 	scons platform=android target=release android_arch=x86_64
 	cd platform/android/java || exit 1
 	./gradlew generateGodotTemplates
-	cd ../../.. || exit 1
 	rm custom.py
 fi
 
