@@ -42,20 +42,20 @@ clean_up() {
 }
 
 fail_exit() {
-	printf "\n BUILD AND DEPLOY SUMMARY:\n%s \n \n" "$summary"
-	printf "%s \n" "$1"
+	printf "\n BUILD AND DEPLOY SUMMARY:\n%b\n" "$summary"
+	printf "%s\n" "$@"
 	echo "Stop Process."
 	clean_up
 	exit 1
 }
 
 success_msg() {
-	printf "%s \n" "$1"
-	summary="$summary$1 \n"
+	printf "%b\n" "$1"
+	summary="$summary$1\n"
 }
 
 ensured() {
-	"$@" || fail_exit "ERROR: Can not: " + "$@"
+	"$@" || fail_exit "ERROR: Can not: $*"
 }
 
 ensured_folder() {
@@ -110,7 +110,7 @@ build_and_deploy_android() {
 	ensured cp -r "$godot_google_play_billing_folder/godot-google-play-billing/build/outputs/aar" "$project_folder/android/plugins"
 	ensured cp "$godot_google_play_billing_folder/GodotGooglePlayBilling.gdap" "$project_folder/android/plugins"
 
-	success_msg "BUILD AND DEPLOY ANDROID: SUCCESS \n IMPORTANT: Remember to 'Install Android Build Template...' from godot 'Project' menu!"
+	success_msg "BUILD AND DEPLOY ANDROID: SUCCESS\nIMPORTANT: Remember to 'Install Android Build Template...' from godot 'Project' menu!"
 }
 
 build_and_deploy_osx() {
@@ -186,7 +186,7 @@ do_osx=0
 do_iphone=0
 
 if [ $# -eq 0 ]; then
-  printf "Missing arguments! List desired platforms as arguments. \n \n"
+  printf "Missing arguments! List desired platforms as arguments.\n\n"
 	echo_help
 	exit 1
 fi
@@ -229,8 +229,8 @@ do
 			do_iphone=1
 			;;
   	*)
-    	printf "Error in command line usage: \n"
-    	printf "Unknown command: %s \n \n" "$1"
+    	printf "Error in command line usage:\n"
+    	printf "Unknown command: %s\n\n" "$1"
     	echo_help
     	exit 1
     	;;
@@ -247,6 +247,8 @@ ensured_file_content "$template_folder/version.txt" "$godot_version"
 if [ $do_x11_editor -eq 1 ] ; then
 	echo "BUILD X11 EDITOR: build"
 	ensured scons platform=x11
+	echo "BUILD X11 EDITOR: copy steam lib"
+	ensured cp "modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so" "bin"
 	success_msg "BUILD X11 EDITOR: SUCCESS"
 fi
 
@@ -267,6 +269,8 @@ fi
 if [ $do_osx_editor -eq 1 ] ; then
 	echo "BUILD OSX EDITOR: build"
 	ensured scons platform=osx arch=x86_64 --jobs="$(sysctl -n hw.logicalcpu)"  # arch=arm64 for arm cpus
+	echo "BUILD OSX EDITOR: copy steam lib"
+	ensured cp "modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib" "bin"
 	success_msg "BUILD OSX EDITOR: SUCCESS"
 fi
 
@@ -279,5 +283,5 @@ if [ $do_iphone -eq 1 ] ; then
 fi
 
 
-printf "\n BUILD AND DEPLOY SUMMARY: \n %s \n" "$summary"
+printf "\n BUILD AND DEPLOY SUMMARY:\n%b\n\n" "$summary"
 exit 0
