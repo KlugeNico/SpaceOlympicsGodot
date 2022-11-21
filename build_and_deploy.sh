@@ -126,7 +126,7 @@ build_and_deploy_osx() {
 	ensured_folder "bin/osx_template.app/Contents"
 	ensured_folder "bin/osx_template.app/Contents/MacOS"
 	ensured cp "bin/godot.osx.opt.universal" "bin/osx_template.app/Contents/MacOS/godot_osx_release.64"
-	ensured chmod +x "bin/osx_template.app/Contents/MacOS/godot_osx*"
+	ensured chmod +x "bin/osx_template.app/Contents/MacOS/godot_osx_release.64"
 	ensured_in_dir "bin" zip -q -9 -r osx.zip osx_template.app
 
 	echo "BUILD AND DEPLOY OSX: deploy"
