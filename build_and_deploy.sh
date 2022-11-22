@@ -64,6 +64,12 @@ ensured_folder() {
 	fi
 }
 
+ensured_no_folder() {
+	if [ -d "$1" ]; then
+		rm -rf "$1" || fail_exit "ERROR: Can not remove folder: $1"
+	fi
+}
+
 ensured_file_content() {
 	echo "$2" >| "$1" || fail_exit "ERROR: Can not set file content: $1"
 }
@@ -92,9 +98,7 @@ build_and_deploy_android() {
 
 	echo "BUILD AND DEPLOY ANDROID: prepare godot_google_play_billing"
 	godot_google_play_billing_folder="bin/godot-google-play-billing"
-	if [ -d "$godot_google_play_billing_folder" ]; then
-		ensured rm -rf "$godot_google_play_billing_folder"
-	fi
+	ensured_no_folder "$godot_google_play_billing_folder"
 	ensured_in_dir "bin" git clone https://github.com/godotengine/godot-google-play-billing.git
 	ensured_in_dir "$godot_google_play_billing_folder" git checkout billing-v5
 	ensured_in_dir "$godot_google_play_billing_folder" git pull
@@ -108,7 +112,7 @@ build_and_deploy_android() {
 	echo "BUILD AND DEPLOY ANDROID: install godot_google_play_billing to project"
 	ensured_folder "$project_folder/android"
 	ensured_folder "$project_folder/android/plugins"
-	ensured cp -r "$godot_google_play_billing_folder/godot-google-play-billing/build/outputs/aar" "$project_folder/android/plugins"
+	ensured cp -r "$godot_google_play_billing_folder/godot-google-play-billing/build/outputs/aar/." "$project_folder/android/plugins"
 	ensured cp "$godot_google_play_billing_folder/GodotGooglePlayBilling.gdap" "$project_folder/android/plugins"
 
 	success_msg "BUILD AND DEPLOY ANDROID: SUCCESS\nIMPORTANT: Remember to 'Install Android Build Template...' from godot 'Project' menu!"
@@ -150,6 +154,7 @@ build_and_deploy_ios() {
 	ensured rm custom.py
 
 	echo "BUILD AND DEPLOY IOS: pack"
+	ensured_no_folder "bin/ios_xcode"
 	ensured cp -r "misc/dist/ios_xcode" "bin"
 	ensured cp "bin/libgodot.iphone.debug.arm64.a" "bin/ios_xcode/libgodot.iphone.debug.xcframework/ios-arm64/libgodot.a"
 	ensured lipo -create "bin/libgodot.iphone.debug.arm64.simulator.a" "bin/libgodot.iphone.debug.x86_64.simulator.a" -output "bin/ios_xcode/libgodot.iphone.debug.xcframework/ios-arm64_x86_64-simulator/libgodot.a"
@@ -161,21 +166,20 @@ build_and_deploy_ios() {
 	ensured cp "bin/iphone.zip" "$HOME/Library/Application Support/Godot/templates/3.5.2.rc"
 
 	echo "BUILD AND DEPLOY IOS: prepare godot-ios-plugins"
-	if [ -d "bin/godot-ios-plugins" ]; then
-		ensured rm -rf "bin/godot-ios-plugins"
-	fi
+	ensured_no_folder "bin/godot-ios-plugins"
 	ensured_in_dir "bin" git clone https://github.com/godotengine/godot-ios-plugins.git
 	ensured rmdir "bin/godot-ios-plugins/godot"
 	ensured_in_dir "bin/godot-ios-plugins" ln -s ../.. godot
 
 	echo "BUILD AND DEPLOY IOS: build godot-ios-plugin inappstore"
-	ensured_in_dir "bin/godot-ios-plugins" ./scripts/generate_xcframework.sh inappstore release_debug 3.x
+	ensured_in_dir "bin/godot-ios-plugins" ./scripts/generate_xcframework.sh inappstore release 3.x
 
 	echo "BUILD AND DEPLOY IOS: deploy godot-ios-plugin inappstore"
 	ensured_folder "$project_folder/ios"
 	ensured_folder "$project_folder/ios/plugins"
 	ensured_folder "$project_folder/ios/plugins/inappstore"
-	ensured cp -r "bin/godot-ios-plugins/bin/inappstore.release_debug.xcframework" "$project_folder/ios/plugins/inappstore/inappstore.xcframework"
+	ensured_no_folder "$project_folder/ios/plugins/inappstore/inappstore.xcframework"
+	ensured cp -r "bin/godot-ios-plugins/bin/inappstore.release.xcframework" "$project_folder/ios/plugins/inappstore/inappstore.xcframework"
 	ensured cp "bin/godot-ios-plugins/plugins/inappstore/inappstore.gdip" "$project_folder/ios/plugins/inappstore"
 
 	success_msg "BUILD AND DEPLOY IOS: SUCCESS"
