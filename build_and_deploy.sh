@@ -92,9 +92,10 @@ build_and_deploy_android() {
 
 	echo "BUILD AND DEPLOY ANDROID: prepare godot_google_play_billing"
 	godot_google_play_billing_folder="bin/godot-google-play-billing"
-	if [ ! -d "$godot_google_play_billing_folder" ]; then
-		ensured_in_dir "bin" git clone https://github.com/godotengine/godot-google-play-billing.git
+	if [ -d "$godot_google_play_billing_folder" ]; then
+		ensured rm -rf "$godot_google_play_billing_folder"
 	fi
+	ensured_in_dir "bin" git clone https://github.com/godotengine/godot-google-play-billing.git
 	ensured_in_dir "$godot_google_play_billing_folder" git checkout billing-v5
 	ensured_in_dir "$godot_google_play_billing_folder" git pull
 	ensured_folder "$godot_google_play_billing_folder/godot-google-play-billing/libs"
@@ -157,9 +158,12 @@ build_and_deploy_ios() {
 	ensured_in_dir "bin/ios_xcode" zip -q -9 -r "../iphone.zip" .
 
 	echo "BUILD AND DEPLOY IOS: deploy"
-	ensured cp iphone.zip "$HOME/Library/Application Support/Godot/templates/3.5.2.rc"
+	ensured cp "bin/iphone.zip" "$HOME/Library/Application Support/Godot/templates/3.5.2.rc"
 
 	echo "BUILD AND DEPLOY IOS: prepare godot-ios-plugins"
+	if [ -d "bin/godot-ios-plugins" ]; then
+		ensured rm -rf "bin/godot-ios-plugins"
+	fi
 	ensured_in_dir "bin" git clone https://github.com/godotengine/godot-ios-plugins.git
 	ensured rmdir "bin/godot-ios-plugins/godot"
 	ensured_in_dir "bin/godot-ios-plugins" ln -s ../.. godot
@@ -171,7 +175,7 @@ build_and_deploy_ios() {
 	ensured_folder "$project_folder/ios"
 	ensured_folder "$project_folder/ios/plugins"
 	ensured_folder "$project_folder/ios/plugins/inappstore"
-	ensured cp -r "bin/godot-ios-plugins/build/bin/inappstore.release_debug.xcframework" "$project_folder/ios/plugins/inappstore/inappstore.xcframework"
+	ensured cp -r "bin/godot-ios-plugins/bin/inappstore.release_debug.xcframework" "$project_folder/ios/plugins/inappstore/inappstore.xcframework"
 	ensured cp "bin/godot-ios-plugins/plugins/inappstore/inappstore.gdip" "$project_folder/ios/plugins/inappstore"
 
 	success_msg "BUILD AND DEPLOY IOS: SUCCESS"
