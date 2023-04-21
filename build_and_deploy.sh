@@ -137,7 +137,7 @@ build_and_deploy_osx() {
 	echo "BUILD AND DEPLOY OSX: deploy"
 	ensured cp "bin/osx.zip" "$template_folder"
 
-	success_msg "BUILD AND DEPLOY OSX: SUCCESS"
+	success_msg "BUILD AND DEPLOY OSX: SUCCESS\nIMPORTANT: Remember to ship executeable with steam lib!"
 }
 
 build_and_deploy_ios() {
@@ -267,7 +267,7 @@ if [ $do_x11 -eq 1 ] ; then
 	ensured rm custom.py
 	echo "BUILD AND DEPLOY X11: deploy"
 	ensured cp "bin/godot.x11.opt.64" "$template_folder/linux_x11_64_release"
-	success_msg "BUILD X11: SUCCESS"
+	success_msg "BUILD X11: SUCCESS\nIMPORTANT: Remember to ship executeable with steam lib!"
 fi
 
 if [ $do_android -eq 1 ] ; then
