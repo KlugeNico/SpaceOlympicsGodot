@@ -95,6 +95,8 @@ build_and_deploy_android() {
 
 	echo "BUILD AND DEPLOY ANDROID: install godot template folder"
 	ensured cp "bin/android_source.zip" "$template_folder"
+	ensured cp "bin/android_debug.apk" "$template_folder"
+	ensured cp "bin/android_release.apk" "$template_folder"
 
 	echo "BUILD AND DEPLOY ANDROID: prepare godot_google_play_billing"
 	godot_google_play_billing_folder="bin/godot-google-play-billing"
