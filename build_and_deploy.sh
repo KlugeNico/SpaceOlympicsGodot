@@ -29,7 +29,7 @@ echo_help() {
 
 Build godot for different platforms.
 
-Possible platforms: x11-editor, x11, android, osx-editor, osx, iphone, all-linux, all-mac
+Possible platforms: x11-editor, x11, android, osx-editor, osx, iphone, web, all-linux, all-mac
 
 EOF
 }
@@ -194,6 +194,7 @@ do_android=0
 do_osx_editor=0
 do_osx=0
 do_iphone=0
+do_web=0
 
 if [ $# -eq 0 ]; then
   printf "Missing arguments! List desired platforms as arguments.\n\n"
@@ -227,6 +228,9 @@ do
 			;;
 		iphone)
 			do_iphone=1
+			;;
+		web)
+			do_web=1
 			;;
 		all-linux)
 			do_android=1
@@ -292,6 +296,15 @@ if [ $do_iphone -eq 1 ] ; then
 	build_and_deploy_ios
 fi
 
+if [ $do_web -eq 1 ] ; then
+	echo "BUILD AND DEPLOY WEB: build"
+	ensured cp custom_module_config.py custom.py
+	ensured scons platform=javascript tools=no target=release
+	ensured rm custom.py
+	echo "BUILD AND DEPLOY WEB: deploy"
+	ensured cp "bin/godot.javascript.opt.zip" "$template_folder/webassembly_release.zip"
+	success_msg "BUILD WEB: SUCCESS\n"
+fi
 
 printf "\n BUILD AND DEPLOY SUMMARY:\n%b\n\n" "$summary"
 exit 0
