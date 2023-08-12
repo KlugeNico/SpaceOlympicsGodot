@@ -297,12 +297,18 @@ if [ $do_iphone -eq 1 ] ; then
 fi
 
 if [ $do_web -eq 1 ] ; then
-	echo "BUILD AND DEPLOY WEB: build"
+	echo "BUILD AND DEPLOY WEB: build release"
 	ensured cp custom_module_config.py custom.py
 	ensured scons platform=javascript tools=no target=release
 	ensured rm custom.py
-	echo "BUILD AND DEPLOY WEB: deploy"
+	echo "BUILD AND DEPLOY WEB: deploy release"
 	ensured cp "bin/godot.javascript.opt.zip" "$template_folder/webassembly_release.zip"
+	echo "BUILD AND DEPLOY WEB: build debug"
+	ensured cp custom_module_config.py custom.py
+	ensured scons platform=javascript tools=no target=debug
+	ensured rm custom.py
+	echo "BUILD AND DEPLOY WEB: deploy debug"
+	ensured cp "bin/godot.javascript.debug.zip" "$template_folder/webassembly_debug.zip"
 	success_msg "BUILD WEB: SUCCESS\n"
 fi
 
